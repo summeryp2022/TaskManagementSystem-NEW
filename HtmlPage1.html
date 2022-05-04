@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="Scripts/jquery-1.10.2.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var ulTask = $('#ulTask');
+
+            $('#btn').click(function () {
+                // Get the username & password from textboxes
+                var username = $('#txtUsername').val();
+                var password = $('#txtPassword').val();
+
+                $.ajax({
+                    type: 'GET',
+                    // Make sure to change the port number to
+                    // where you have the employee service
+                    // running on your local machine
+                    url: 'https://localhost:44302/api/Task',
+                    dataType: 'json',
+                    // Specify the authentication header
+                    // btoa() method encodes a string to Base64
+                    headers: {
+                        'Authorization': 'Basic ' + btoa(username + ':' + password)
+                    },
+                    success: function (data) {
+                        ulTask.empty();
+                        $.each(data, function (index, val) {
+                            
+                            ulTask.append('<li>' + val.Contact + ' (' + val.TaskType + ')</li>')
+                        });
+                    },
+                    complete: function (jqXHR) {
+                        if (jqXHR.status == '401') {
+                            ulTask.empty();
+                            ululTask.append('<li style="color:red">'
+                                + jqXHR.status + ' : ' + jqXHR.statusText + '</li>')
+                        }
+                    }
+                });
+            });
+
+            $('#btnClear').click(function () {
+                ulTask.empty();
+            });
+        });
+    </script>
+</head>
+<body>
+    Username : <input type="text" id="txtUsername" />
+    Password : <input type="password" id="txtPassword" />
+    <br /><br />
+    <input id="btn" type="button" value="Authenticate and Get Task" />
+    <input id="btnClear" type="button" value="Clear" />
+    <ul id="ulTask"></ul>
+</body>
+</html>
